@@ -75,3 +75,71 @@ node app.js 2
 ```
 > this will run the engine with the inputs : rule in database exo2.txt with initial facts ['b','c'] and a goal of 'h' for backward chaining
 
+##### rules:
+```javascript
+ [
+  Rule {
+    premises: [ 'b', 'd', 'e' ],
+    conclusion: 'f',
+    disabled: false
+  },
+  Rule { premises: [ 'g', 'd' ], conclusion: 'a', disabled: false
+ },
+  Rule { premises: [ 'c', 'f' ], conclusion: 'a', disabled: false
+ },
+  Rule { premises: [ 'b' ], conclusion: 'x', disabled: false },
+  Rule { premises: [ 'd' ], conclusion: 'e', disabled: false },
+  Rule { premises: [ 'x', 'a' ], conclusion: 'h', disabled: false
+ },
+  Rule { premises: [ 'c' ], conclusion: 'd', disabled: false },
+  Rule { premises: [ 'x', 'c' ], conclusion: 'a', disabled: false
+ },
+  Rule { premises: [ 'x', 'b' ], conclusion: 'd', disabled: false
+ }
+] 
+```
+##### forward chaining
+```javascript
+applying: R4: b=>x bf= {b,c,x}
+applying: R7: c=>d bf= {b,c,x,d}
+applying: R8: x,c=>a bf= {b,c,x,d,a}
+applying: R9: x,b=>d bf= {b,c,x,d,a}
+applying: R6: x,a=>h bf= {b,c,x,d,a,h}
+applying: R5: d=>e bf= {b,c,x,d,a,h,e}
+applying: R1: b,d,e=>f bf= {b,c,x,d,a,h,e,f}
+applying: R3: c,f=>a bf= {b,c,x,d,a,h,e,f}
+```
+##### backward chaining
+```javascript
+default: 1
+ stack.length = 1 (disabled rules: 0)
+check : x result :  false
+check : a result :  false
+facts: {b,c}  stack= [h]
+rule: x,a=>h stack: h,a remaining premisses: x,a
+check : x result :  false
+check : c result :  true
+facts: {b,c}  stack= [h,a]
+rule: x,c=>a stack: h,a,x remaining premisses: x
+applied rules:
+default: 2
+ stack.length = 3 (disabled rules: 0)
+check : b result :  true
+facts: {b,c}  stack= [h,a,x]
+* - applying: R4: b=>x bf= {b,c}  stack= [h,a,x]
+check : x result :  true
+check : c result :  true
+facts: {b,c,x}  stack= [h,a]
+* - applying: R8: x,c=>a bf= {b,c,x}  stack= [h,a]
+applied rules: R4 (b=>x)->R8 (x,c=>a)
+default: 3
+ stack.length = 1 (disabled rules: 2)
+check : x result :  true
+check : a result :  true
+facts: {b,c,x,a}  stack= [h]
+* - applying: R6: x,a=>h bf= {b,c,x,a}  stack= [h]
+applied rules: R4 (b=>x)->R8 (x,c=>a)->R6 (x,a=>h)
+
+```
+
+
