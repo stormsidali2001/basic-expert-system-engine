@@ -1,5 +1,17 @@
 # basic-expert-system-engine
-### Description
+### Table of content
+- [basic-expert-system-engine](#basic-expert-system-engine)
+    - [Table of content](#table-of-content)
+    - [Cloning the repository](#cloning-the-repository)
+    - [Running the engine](#running-the-engine)
+      - [Example1:](#example1)
+        - [rules:](#rules)
+        - [forward chaining results](#forward-chaining-results)
+        - [backward chaining results:](#backward-chaining-results)
+      - [Example2:](#example2)
+        - [rules:](#rules-1)
+        - [forward chaining](#forward-chaining)
+        - [backward chaining](#backward-chaining)
 ### Cloning the repository
 ```
 git clone https://github.com/stormsidali2001/basic-expert-system-engine 
