@@ -51,34 +51,27 @@ applying: R4: b,d=>f bf= {e,f,d,b,a,c}
 ##### backward chaining results:
 ```javascript
 default: 1
- stack.length = 1 (disabled rules: 0)
-check : e result :  true
-check : b result :  false
+ stack.length = 1 top element:  c null
 facts: {e,f}  stack= [c]
-rule: e,b=>c stack: c,b remaining premisses: b
-check : d result :  false
-check : e result :  true
+             rule: e,b=>c stack: c,b remaining premisses: b next round :  b
+default: 2
+ stack.length = 2 top element:  b c
 facts: {e,f}  stack= [c,b]
-rule: d,e=>b stack: c,b,d remaining premisses: d
-check : e result :  true
-check : f result :  true
+             rule: d,e=>b stack: c,b,d remaining premisses: d next round :  d
+default: 3
+ stack.length = 3 top element:  d b
 facts: {e,f}  stack= [c,b,d]
 * - applying: R5: e,f=>d bf= {e,f}  stack= [c,b,d]
-applied rules: R5 (e,f=>d)
-default: 2
- stack.length = 2 (disabled rules: 1)
-check : d result :  true
-check : e result :  true
+default: 4
+ stack.length = 2 top element:  b d
 facts: {e,f,d}  stack= [c,b]
 * - applying: R3: d,e=>b bf= {e,f,d}  stack= [c,b]
-applied rules: R5 (e,f=>d)->R3 (d,e=>b)
-default: 3
- stack.length = 1 (disabled rules: 2)
-check : e result :  true
-check : b result :  true
+default: 5
+ stack.length = 1 top element:  c b
 facts: {e,f,d,b}  stack= [c]
 * - applying: R1: e,b=>c bf= {e,f,d,b}  stack= [c]
 applied rules: R5 (e,f=>d)->R3 (d,e=>b)->R1 (e,b=>c)
+impossible rules:
 ```
 
 #### Example2:
@@ -124,33 +117,60 @@ applying: R3: c,f=>a bf= {b,c,x,d,a,h,e,f}
 ##### backward chaining
 ```javascript
 default: 1
- stack.length = 1 (disabled rules: 0)
-check : x result :  false
-check : a result :  false
+ stack.length = 1 top element:  h null
 facts: {b,c}  stack= [h]
-rule: x,a=>h stack: h,a remaining premisses: x,a
-check : x result :  false
-check : c result :  true
-facts: {b,c}  stack= [h,a]
-rule: x,c=>a stack: h,a,x remaining premisses: x
-applied rules:
+             rule: x,a=>h stack: h,x remaining premisses: x,a next round :  x
 default: 2
- stack.length = 3 (disabled rules: 0)
-check : b result :  true
-facts: {b,c}  stack= [h,a,x]
-* - applying: R4: b=>x bf= {b,c}  stack= [h,a,x]
-check : x result :  true
-check : c result :  true
-facts: {b,c,x}  stack= [h,a]
-* - applying: R8: x,c=>a bf= {b,c,x}  stack= [h,a]
-applied rules: R4 (b=>x)->R8 (x,c=>a)
+ stack.length = 2 top element:  x h
+facts: {b,c}  stack= [h,x]
+* - applying: R4: b=>x bf= {b,c}  stack= [h,x]
 default: 3
- stack.length = 1 (disabled rules: 2)
-check : x result :  true
-check : a result :  true
-facts: {b,c,x,a}  stack= [h]
-* - applying: R6: x,a=>h bf= {b,c,x,a}  stack= [h]
-applied rules: R4 (b=>x)->R8 (x,c=>a)->R6 (x,a=>h)
+ stack.length = 1 top element:  h x
+facts: {b,c,x}  stack= [h]
+             rule: x,a=>h stack: h,a remaining premisses: a next round :  a
+default: 4
+ stack.length = 2 top element:  a h
+facts: {b,c,x}  stack= [h,a]
+             rule: g,d=>a stack: h,a,g remaining premisses: g,d next round :  g
+default: 5
+ stack.length = 3 top element:  g a
+default: 6
+ stack.length = 3 top element:  g g
+facts: {b,c,x}  stack= [h,a]
+             rule: c,f=>a stack: h,a,f remaining premisses: f next round :  f
+default: 7
+ stack.length = 3 top element:  f a
+facts: {b,c,x}  stack= [h,a,f]
+             rule: b,d,e=>f stack: h,a,f,d remaining premisses: d,e next round :
+  d
+default: 8
+ stack.length = 4 top element:  d f
+facts: {b,c,x}  stack= [h,a,f,d]
+* - applying: R7: c=>d bf= {b,c,x}  stack= [h,a,f,d]
+default: 9
+ stack.length = 3 top element:  f d
+facts: {b,c,x,d}  stack= [h,a,f]
+             rule: b,d,e=>f stack: h,a,f,e remaining premisses: e next round :
+e
+default: 10
+ stack.length = 4 top element:  e f
+facts: {b,c,x,d}  stack= [h,a,f,e]
+* - applying: R5: d=>e bf= {b,c,x,d}  stack= [h,a,f,e]
+default: 11
+ stack.length = 3 top element:  f e
+facts: {b,c,x,d,e}  stack= [h,a,f]
+* - applying: R1: b,d,e=>f bf= {b,c,x,d,e}  stack= [h,a,f]
+default: 12
+ stack.length = 2 top element:  a f
+facts: {b,c,x,d,e,f}  stack= [h,a]
+* - applying: R3: c,f=>a bf= {b,c,x,d,e,f}  stack= [h,a]
+default: 13
+ stack.length = 1 top element:  h a
+facts: {b,c,x,d,e,f,a}  stack= [h]
+* - applying: R6: x,a=>h bf= {b,c,x,d,e,f,a}  stack= [h]
+applied rules: R4 (b=>x)->R7 (c=>d)->R5 (d=>e)->R1 (b,d,e=>f)->R3 (c,f=>a)->R6 (
+x,a=>h)
+impossible rules: g,d=>a
 
 ```
 
