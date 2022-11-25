@@ -55,14 +55,20 @@ function backwardChaining(facts,inputRules,fact){
     const rules = inputRules.map(rule=>rule.clone());
     const factsSet = new Set([...facts]);
     const stack = [fact];
-    let dRules = 0;
-    let prevDrules = Infinity;
     const appliedRules = []
+    let savedRule = null;
+    let lastGoal = null;
+    const imposibleRules = [];
     console.log("backward chaining: ",facts,rules,"goal: "+fact)
-    while(stack.length !== 0 ){
+    while(stack.length !== 0  ){
         console.count()
-         console.log(" stack.length = "+stack.length+" (disabled rules: "+dRules+")")
-        prevDrules = dRules;
+        console.log(" stack.length = "+stack.length,"top element: ",stack[stack.length -1],lastGoal)
+        if(stack[stack.length -1] === lastGoal){ 
+            stack.pop();
+            savedRule.disabled = true;
+            imposibleRules.push(savedRule)
+        }
+        lastGoal = stack[stack.length -1 ];
         for(let i=0 ;i<rules.length;i++){
             const rule = rules[i];
             if(rule.disabled || rule.conclusion != stack[stack.length-1]) continue;
@@ -70,7 +76,6 @@ function backwardChaining(facts,inputRules,fact){
             let allPrimissesExist = true;
             rule.premises.forEach(p=>{ 
                 const h = factsSet.has(p)
-                console.log("check : "+p+" result : ",h)
                 if(!h){ 
                     reminingPremisses.push(p)
                     allPrimissesExist = false;
@@ -84,19 +89,23 @@ function backwardChaining(facts,inputRules,fact){
                 appliedRules.push(`R${i+1} (${rule.toString()})`)
                 rule.disabled = true;
                 factsSet.add(rule.conclusion); 
-                dRules++;
-                stack.pop()
+                stack.pop();
+                break;
             }else{
                 
-                stack.push(reminingPremisses[reminingPremisses.length-1])
-                console.log('rule: '+rule+` stack: `+stack ,'remaining premisses: '+reminingPremisses)
+                stack.push(reminingPremisses[0])
+                console.log('             rule: '+rule+` stack: `+stack ,'remaining premisses: '+reminingPremisses,"next round : ",reminingPremisses[0])
+                savedRule = rule;
+                break;
                 
             }
          }
-         console.log("applied rules: "+appliedRules.join('->'))
-    }
-   
-
+        
+        }
+        
+        
+        console.log("applied rules: "+appliedRules.join('->'))
+        console.log("impossible rules: "+imposibleRules.join('->'))
 }
 
 
