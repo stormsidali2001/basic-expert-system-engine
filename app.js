@@ -4,7 +4,10 @@ const fs = require("fs/promises");
 const exo = getExoNumberArg();
 const faits = exo === 1 ?["e","f"]: ["b","c"];
 const but = exo === 1 ? 'c':'h';
-
+const debugOptions = {
+   forwardChaining:true,
+   backwardChaining:true
+}
 (async function  (){
     const data = await fs.readFile(exo === 1 ?"exo1.txt":"exo2.txt",{encoding:"utf8"})
     const rules = data.split('\r\n').map(r=>new Rule(r));
@@ -39,7 +42,7 @@ function forwardChaining(facts,inputRules){
                 rule.disabled = true;
                 dRules++;
                 factsSet.add(rule.conclusion); 
-                console.log('applying: R'+(i+1)+': '+rule.toString()+" bf= {" +[...factsSet].join(',') + "}" )
+                if(debugOptions.forwardChaining) console.log('applying: R'+(i+1)+': '+rule.toString()+" bf= {" +[...factsSet].join(',') + "}" )
             }
          }
          if(sense === 'down') {
@@ -48,7 +51,7 @@ function forwardChaining(facts,inputRules){
          else sense = 'down'
        
     }
-    console.log([...factsSet])
+    if(debugOptions.forwardChaining) console.log([...factsSet])
 }
 
 function backwardChaining(facts,inputRules,fact){
@@ -59,10 +62,10 @@ function backwardChaining(facts,inputRules,fact){
     let savedRule = null;
     let lastGoal = null;
     const imposibleRules = [];
-    console.log("backward chaining: ",facts,rules,"goal: "+fact)
+    if(debugOptions.backwardChaining) console.log("backward chaining: ",facts,rules,"goal: "+fact)
     while(stack.length !== 0  ){
-        console.count()
-        console.log(" stack.length = "+stack.length,"top element: ",stack[stack.length -1],lastGoal)
+        if(debugOptions.backwardChaining) console.count("round "+stack.length)
+        if(debugOptions.backwardChaining) console.log(" stack.length = "+stack.length,"top element: ",stack[stack.length -1],lastGoal)
         if(stack[stack.length -1] === lastGoal){ 
             stack.pop();
             savedRule.disabled = true;
@@ -83,9 +86,9 @@ function backwardChaining(facts,inputRules,fact){
             
 
             })
-            console.log("facts: "+ "{"+[...factsSet].join(',') + "}" +"  stack= ["+[...stack].join(',')+"]")
+            if(debugOptions.backwardChaining) console.log("facts: "+ "{"+[...factsSet].join(',') + "}" +"  stack= ["+[...stack].join(',')+"]")
             if(allPrimissesExist){
-                console.log('* - applying: R'+(i+1)+': '+rule.toString(),"bf= {" +[...factsSet].join(',') + "}" +"  stack= ["+[...stack].join(',')+"]")
+                if(debugOptions.backwardChaining) console.log('* - applying: R'+(i+1)+': '+rule.toString(),"bf= {" +[...factsSet].join(',') + "}" +"  stack= ["+[...stack].join(',')+"]")
                 appliedRules.push(`R${i+1} (${rule.toString()})`)
                 rule.disabled = true;
                 factsSet.add(rule.conclusion); 
@@ -94,7 +97,7 @@ function backwardChaining(facts,inputRules,fact){
             }else{
                 
                 stack.push(reminingPremisses[0])
-                console.log('             rule: '+rule+` stack: `+stack ,'remaining premisses: '+reminingPremisses,"next round : ",reminingPremisses[0])
+                if(debugOptions.backwardChaining) console.log('             rule: '+rule+` stack: `+stack ,'remaining premisses: '+reminingPremisses,"next round : ",reminingPremisses[0])
                 savedRule = rule;
                 break;
                 
@@ -104,8 +107,8 @@ function backwardChaining(facts,inputRules,fact){
         }
         
         
-        console.log("applied rules: "+appliedRules.join('->'))
-        console.log("impossible rules: "+imposibleRules.join('->'))
+        if(debugOptions.backwardChaining)console.log("applied rules: "+appliedRules.join('->'))
+        if(debugOptions.backwardChaining)console.log("impossible rules: "+imposibleRules.join('->'))
 }
 
 
